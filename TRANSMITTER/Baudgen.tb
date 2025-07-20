@@ -1,0 +1,49 @@
+`timescale 1ns / 1ps
+
+module BaudGen_tb;
+
+    // Inputs
+    reg clk;
+    reg rst;
+    reg [1:0] baud_rate;
+
+    wire baud_clk;
+
+    BaudGen uut (
+        .clk(clk),
+        .rst(rst),
+        .baud_rate(baud_rate),
+        .baud_clk(baud_clk)
+    );
+
+    always #5 clk = ~clk;
+
+    task test_baud(input [1:0] rate, input integer cycles);
+        begin
+            baud_rate = rate;
+            $display("Testing baud_rate = %b at time %t", rate, $time);
+            repeat (cycles) @(posedge clk);
+        end
+    endtask
+
+    initial begin
+        // Initialize Inputs
+        clk = 0;
+        rst = 0;
+        baud_rate = 2'b00;
+
+        // Apply reset
+        #20;
+        rst = 1;
+
+        test_baud(2'b00, 25000); // 2400 baud
+        test_baud(2'b01, 12500); // 4800 baud
+        test_baud(2'b10,  7000); // 9600 baud
+        test_baud(2'b11,  5000); // 12800 baud
+
+        // Finish simulation
+        $display("Test completed at time %t", $time);
+        $finish;
+    end
+
+endmodule

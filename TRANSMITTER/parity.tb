@@ -1,0 +1,38 @@
+`timescale 1ns / 1ps
+
+module parity_tb( );
+    
+    reg rst;
+    reg [7:0] data;
+    reg [1:0] parity_type;
+    wire parity_bit;
+  
+         parity uut (
+        .rst(rst),
+        .data(data),
+        .parity_type(parity_type),
+        .parity_bit(parity_bit)
+             );
+    
+           parameter ODD  = 2'b01;
+           parameter EVEN = 2'b10;
+
+    
+   initial begin
+        $display("Time\t rst\t parity_type\t data\t\t parity_bit");
+        $monitor("%0dns\t %b\t %b\t\t %b\t %b", $time, rst, parity_type, data, parity_bit);
+
+
+        rst = 0;
+        data = 8'b10101010; // 4 ones
+        parity_type = ODD;
+        #10;
+
+        data = 8'b11100000; // 3 ones
+        parity_type = EVEN;
+        #10;
+
+        $finish;
+    end
+       
+endmodule
